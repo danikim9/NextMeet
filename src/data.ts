@@ -353,3 +353,32 @@ export const REPORT_REASONS = [
   '다른 불편한 일이 있어요',
 ] as const
 
+
+/** 광고 예시. 광고주와 상품은 모두 가상이며, 앱은 예약·결제를 하지 않습니다. */
+export type Ad = {
+  id: string
+  advertiser: string
+  title: string
+  emoji: string
+  price: string
+  summary: string
+  includes: string[]
+  excludes: string[]
+  refund: string
+  promise: string
+}
+
+export const ADS: Ad[] = [
+  {
+    id: 'ad1',
+    advertiser: '바다빛여행 (가상 여행사)',
+    title: '부산 출발 남해 크루즈 3박 4일',
+    emoji: '🛳️',
+    price: '1인 189만 원부터 (예시)',
+    summary: '부산에서 출발해 여수·통영·거제를 둘러보는 연안 크루즈. 계단 적은 객실, 선상 의료진 상주.',
+    includes: ['객실 3박 (2인 1실)', '선상 식사 전부', '기항지 해설 투어 1회'],
+    excludes: ['부산항까지 교통', '선택 관광', '여행자 보험'],
+    refund: '출발 30일 전까지 전액 환불, 이후는 여행사 약관에 따름 (예시)',
+    promise: '현장 추가 판매와 쇼핑 일정이 없는 상품만 실어요.',
+  },
+]

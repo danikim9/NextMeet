@@ -645,3 +645,17 @@ html, body { background: #e4eef1; }
 .bridge { align-items: start; }
 .bridge > span[aria-hidden] { align-self: center; }
 .bridge__step span:last-child { white-space: nowrap; }
+
+/* ── 광고 배너: 강좌·모임 행과 확실히 다르게 ── */
+.ad-slot { padding: 6px 20px 14px; border-top: 1px solid var(--line); }
+.rows li + .ad-slot, .ad-slot + li .row-item { border-top: 1px solid var(--line); }
+.ad-banner { width: 100%; text-align: left; cursor: pointer; padding: 10px 14px 14px; border-radius: 18px; border: 2px dashed #8aa5ad; background: #eef3f5; display: flex; flex-direction: column; gap: 8px; }
+.ad-banner__label { align-self: flex-start; font-family: 'Jua', sans-serif; font-size: .8rem; padding: 2px 12px; border-radius: 999px; background: var(--ink); color: #fff; }
+.ad-banner__body { display: flex; align-items: center; gap: 12px; }
+.ad-banner__emoji { font-size: 2rem; width: 52px; height: 52px; display: grid; place-items: center; background: var(--surface); border-radius: 14px; flex-shrink: 0; }
+.ad-banner__text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.ad-banner__text b { font-family: 'Jua', sans-serif; font-weight: 400; font-size: 1.05rem; }
+.ad-banner__text small { color: var(--sub); font-size: .8rem; }
+.ad-banner__go { font-size: 1.6rem; color: var(--sub); }
+.badge-ad { background: var(--ink) !important; color: #fff; }
+.cover--ad { background: #eef3f5; }

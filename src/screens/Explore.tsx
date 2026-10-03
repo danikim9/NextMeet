@@ -1,10 +1,13 @@
-import { useState } from 'react'
-import { DONGS, HOST_NAME, HOST_TYPE, INTERESTS, PUBLIC_PLACES, type Program } from '../data'
+import { Fragment, useState } from 'react'
+import { ADS, DONGS, HOST_NAME, HOST_TYPE, INTERESTS, PUBLIC_PLACES, type Ad, type Program } from '../data'
 import {
   go,
   joinGroup,
+  openAd,
   openGroup,
   openProgram,
+  reportAd,
+  showToast,
   submitProposal,
   toggleEnroll,
   useStore,
@@ -91,13 +94,15 @@ function ProgramList() {
 
       {list.length === 0 && <p className="fine pad">아직 이 종류는 없어요. 직접 제안해 보세요!</p>}
       <ul className="rows">
-        {list.map((p) => {
+        {list.map((p, i) => {
           const joined = p.kind === 'group' ? groupIds.includes(p.groupId ?? '') : enrolled.includes(p.id)
           const shared = p.interests.some((i) => profile.interests.includes(i))
           const g = groups.find((x) => x.id === p.groupId)
           const follow = p.kind === 'class' && p.groupId ? programs.find((x) => x.kind === 'group' && x.groupId === p.groupId) : undefined
           return (
-            <li key={p.id}>
+            <Fragment key={p.id}>
+            {filter === 'all' && i === 2 && <AdBanner ad={ADS[0]} />}
+            <li>
               <button className="row-item" onClick={() => openProgram(p.id)}>
                 <span className={`thumb thumb--${p.kind}`} aria-hidden>
                   {p.emoji}
@@ -125,6 +130,7 @@ function ProgramList() {
                 )}
               </button>
             </li>
+            </Fragment>
           )
         })}
       </ul>
@@ -149,6 +155,90 @@ function ProgramList() {
         <span aria-hidden>＋</span> 제안하기
       </button>
     </>
+  )
+}
+
+/** 둘러보기 목록 사이의 광고 배너: 모양과 색을 강좌·모임과 다르게, '광고' 표시를 맨 앞에 */
+function AdBanner({ ad }: { ad: Ad }) {
+  return (
+    <li className="ad-slot">
+      <button className="ad-banner" onClick={() => openAd(ad.id)}>
+        <span className="ad-banner__label">광고</span>
+        <span className="ad-banner__body">
+          <span className="ad-banner__emoji" aria-hidden>
+            {ad.emoji}
+          </span>
+          <span className="ad-banner__text">
+            <b>{ad.title}</b>
+            <small>
+              {ad.advertiser} · {ad.price}
+            </small>
+          </span>
+          <span className="ad-banner__go" aria-hidden>
+            ›
+          </span>
+        </span>
+      </button>
+    </li>
+  )
+}
+
+export function AdDetail() {
+  const { adId } = useStore()
+  const ad = ADS.find((x) => x.id === adId)
+  if (!ad) return null
+  return (
+    <main className="page page--cta">
+      <div className="cover cover--ad">
+        <button className="cover__back" onClick={() => go('explore')} aria-label="이전으로">
+          ←
+        </button>
+        <span aria-hidden>{ad.emoji}</span>
+      </div>
+      <span className="badges">
+        <span className="badge-ad">광고</span>
+        <DemoTag>가상 예시</DemoTag>
+      </span>
+      <h1 className="h1">{ad.title}</h1>
+      <p className="sub">{ad.advertiser}</p>
+      <p>{ad.summary}</p>
+
+      <dl className="card facts facts--detail">
+        <div>
+          <dt>가격</dt>
+          <dd>{ad.price}</dd>
+        </div>
+        <div>
+          <dt>포함</dt>
+          <dd>{ad.includes.join(' · ')}</dd>
+        </div>
+        <div>
+          <dt>불포함</dt>
+          <dd>{ad.excludes.join(' · ')}</dd>
+        </div>
+        <div>
+          <dt>환불</dt>
+          <dd>{ad.refund}</dd>
+        </div>
+      </dl>
+
+      <Note tone="warm">
+        <b>또봄은 이 상품을 팔지 않아요.</b> 예약과 결제는 여행사와 직접 해요. {ad.promise} 추가 구매를 권유받으면 아래에서 알려 주세요.
+      </Note>
+      <button className="link-btn" onClick={() => reportAd(ad.advertiser)}>
+        이 광고 신고하기
+      </button>
+
+      <div className="cta-bar">
+        <span className="cta-bar__info">
+          <b>{ad.price.split(' (')[0]}</b>
+          <small>광고</small>
+        </span>
+        <button className="btn btn--ghost" onClick={() => showToast('데모에서는 여행사 페이지로 이동하지 않아요')}>
+          여행사에서 보기
+        </button>
+      </div>
+    </main>
   )
 }
 

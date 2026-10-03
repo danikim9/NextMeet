@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useStore } from './store'
 import { Toast } from './ui'
 import { InterestStep, NameStep, Start } from './screens/Onboarding'
-import { Explore, ProgramDetail, Propose, Welcome } from './screens/Explore'
+import { AdDetail, Explore, ProgramDetail, Propose, Welcome } from './screens/Explore'
 import { Help, Home, Leave, Meet, ProposeMeet, ReportScreen, Send } from './screens/Group'
 import { Host } from './screens/Host'
 
@@ -32,6 +32,7 @@ export default function App() {
     interests: <InterestStep />,
     explore: <Explore />,
     program: <ProgramDetail />,
+    ad: <AdDetail />,
     propose: <Propose />,
     welcome: <Welcome />,
     home: <Home />,

@@ -61,6 +61,7 @@ export type Screen =
   | 'interests'
   | 'explore'
   | 'program'
+  | 'ad'
   | 'propose'
   | 'welcome'
   | 'home'
@@ -82,6 +83,8 @@ export type State = {
   programId: string | null
   /** 신청한 강좌 */
   enrolled: string[]
+  /** 열어 본 광고 */
+  adId: string | null
   groups: Group[]
   programs: Program[]
   meetups: Record<string, Meetup[]>
@@ -102,6 +105,7 @@ function seed(): State {
     groupId: null,
     programId: null,
     enrolled: [],
+    adId: null,
     groups: SEED_GROUPS,
     programs: SEED_PROGRAMS,
     meetups: SEED_MEETUPS,
@@ -195,6 +199,19 @@ const uid = () => Math.random().toString(36).slice(2, 9)
 export function openProgram(id: string) {
   setState((s) => ({ ...s, programId: id, screen: 'program', toast: null }))
   window.scrollTo(0, 0)
+}
+
+export function openAd(id: string) {
+  setState((s) => ({ ...s, adId: id, screen: 'ad', toast: null }))
+  window.scrollTo(0, 0)
+}
+
+export function reportAd(advertiser: string) {
+  setState((s) => ({
+    ...s,
+    toast: '광고 신고를 진행자에게 전했어요',
+    reports: [{ id: uid(), groupId: s.groupId, reason: '광고 상품에 문제가 있어요', about: advertiser, when: now(), status: 'new' }, ...s.reports],
+  }))
 }
 
 export function toggleEnroll(programId: string) {
