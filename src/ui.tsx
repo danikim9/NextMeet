@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, useId, type ReactNode } from 'react'
 import { go, resetDemo, setState, useStore, type CheckinKind, type ReplyKind, type Screen } from './store'
 
 export const CHECKIN: Record<CheckinKind, { label: string; emoji: string; desc: string }> = {
@@ -22,7 +22,7 @@ export function TopBar({ back, title }: { back?: Screen; title?: string }) {
         </button>
       ) : (
         <div className="brand">
-          <span className="brand__mark" aria-hidden />
+          <Buddy size={46} />
           또봄
         </div>
       )}
@@ -143,5 +143,44 @@ export function DateBlock({ date }: { date: string }) {
       <b>{m[2]}</b>
       <small>{m[3]}요일</small>
     </span>
+  )
+}
+
+/** 또봄이: 로고의 두 동그라미가 손그림 캐릭터가 된 마스코트 */
+export function Buddy({ mood = 'happy', size = 140 }: { mood?: 'happy' | 'sleep' | 'wave'; size?: number }) {
+  const id = useId().replace(/:/g, '')
+  const ink = '#15323d'
+  const eye = (x: number) =>
+    mood === 'sleep' ? (
+      <path key={x} d={`M${x - 4} 52 q4 4 8 0`} stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
+    ) : (
+      <circle key={x} cx={x} cy={52} r={3.6} fill={ink} />
+    )
+  return (
+    <svg className="buddy" viewBox="0 0 150 100" width={size} height={(size * 100) / 150} aria-hidden>
+      <defs>
+        <filter id={`w${id}`}>
+          <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="4" />
+          <feDisplacementMap in="SourceGraphic" scale="3" />
+        </filter>
+      </defs>
+      <g filter={`url(#w${id})`} stroke={ink} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M96 26 q2 -14 16 -16 q0 13 -16 16z" fill="#4FB6C6" />
+        <path d="M96 26 q-3 -6 0 -12" fill="none" />
+        <circle cx="50" cy="60" r="32" fill="#4FB6C6" />
+        <circle cx="94" cy="60" r="32" fill="#FF6F7D" />
+        {mood === 'wave' && <path d="M124 52 q12 -6 12 -20" fill="none" />}
+      </g>
+      <ellipse cx="34" cy="64" rx="6" ry="3.5" fill="#FFD6C8" />
+      <ellipse cx="110" cy="64" rx="6" ry="3.5" fill="#FFD6C8" />
+      {[40, 54, 88, 102].map(eye)}
+      <path d="M41 63 q6 6 12 0" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
+      <path d="M89 63 q6 6 12 0" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
+      {mood === 'sleep' && (
+        <text x="124" y="30" fontFamily="Jua, sans-serif" fontSize="16" fill={ink}>
+          z z
+        </text>
+      )}
+    </svg>
   )
 }

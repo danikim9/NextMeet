@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { DONGS, HOST_NAME, HOST_ORG, HOST_TYPE, INTERESTS, PUBLIC_PLACES, TIMES } from '../data'
 import { addCenterProgram, addMeetup, approveProposal, declineProposal, markReportSeen, useStore } from '../store'
-import { DemoTag, ResetLink } from '../ui'
+import { Buddy, DemoTag, ResetLink } from '../ui'
 
 // 진행자(복지관 담당자)용 최소 화면. 개인별 안부 기록은 보여 주지 않습니다.
 export function Host() {
@@ -13,7 +13,7 @@ export function Host() {
     <main className="host">
       <header className="host__bar">
         <div className="brand">
-          <span className="brand__mark" aria-hidden />
+          <Buddy size={46} />
           또봄 <small>진행자</small>
         </div>
         <span className="demo-pill">데모</span>

@@ -16,7 +16,7 @@ import {
   type CheckinKind,
   type ReplyKind,
 } from '../store'
-import { AvatarStack, CHECKIN, DateBlock, DemoTag, Note, REPLY, ResetLink, TabBar, TopBar } from '../ui'
+import { AvatarStack, Buddy, CHECKIN, DateBlock, DemoTag, Note, REPLY, ResetLink, TabBar, TopBar } from '../ui'
 
 function useGroup() {
   const s = useStore()
@@ -49,7 +49,7 @@ function NoGroup({ active }: { active: 'home' | 'meet' }) {
       <TopBar />
       <h1 className="h1">{active === 'home' ? '내 모임' : '만남'}</h1>
       <div className="empty">
-        <span aria-hidden>🌱</span>
+        <Buddy mood="sleep" size={130} />
         <p>아직 들어간 모임이 없어요.</p>
         <p className="fine">둘러보기에서 동네 모임을 찾아보세요. 강좌를 들은 뒤 같은 반 분들과 모임으로 이어 갈 수도 있어요.</p>
       </div>
@@ -180,10 +180,11 @@ function CheckinCard({ c, me }: { c: Checkin; me: string }) {
           {info.emoji}
         </span>
         <div>
-          <p className="checkin__who">{mine ? '내 안부' : `${c.from} 님`}</p>
+          <p className="checkin__who">
+            {mine ? '내 안부' : `${c.from} 님`} <span className="checkin__when">· {c.when}</span>
+          </p>
           <p className="checkin__what">{info.label}</p>
         </div>
-        <span className="checkin__when">{c.when}</span>
       </div>
 
       {c.replies.length > 0 && (
@@ -233,7 +234,12 @@ export function Send() {
   return (
     <main className="page">
       <TopBar back="home" />
-      <h1 className="h1">오늘 어떠세요?</h1>
+      <div className="send-head">
+        <Buddy size={110} />
+        <h1 className="h1">
+          오늘 <span className="scribble">어떠세요?</span>
+        </h1>
+      </div>
       <p className="sub">버튼 하나만 누르면 돼요. 글은 쓰지 않아도 괜찮아요.</p>
       <div className="send-list">
         {(Object.keys(CHECKIN) as CheckinKind[]).map((k) => (
@@ -320,20 +326,17 @@ function MeetupCard({ m, me, host, people }: { m: Meetup; me: string; host: stri
           이번엔 못 가요
         </button>
       </div>
-      <p className="who-goes">
-        {yes.length > 0 && <AvatarStack names={yes} max={5} />}
-        <b>
-          참여 {yes.length}/{people.length}
-        </b>{' '}
-        {yes.length ? yes.map(name).join(', ') : '아직 없어요'}
-        {no.length > 0 && (
-          <>
-            <br />
-            <b>못 가요</b> {no.map(name).join(', ')}
-          </>
-        )}
-        <DemoTag>예시 응답 포함</DemoTag>
-      </p>
+      <div className="who-goes">
+        <div className="who-goes__row">
+          {yes.length > 0 && <AvatarStack names={yes} max={5} />}
+          <b>
+            참여 {yes.length}/{people.length}
+          </b>
+          <DemoTag>예시 응답 포함</DemoTag>
+        </div>
+        <p>{yes.length ? yes.map(name).join(', ') : '아직 간다는 분이 없어요'}</p>
+        {no.length > 0 && <p className="fine">이번엔 못 가요: {no.map(name).join(', ')}</p>}
+      </div>
     </article>
   )
 }

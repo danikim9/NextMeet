@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { DEMO_INVITE_CODE, DONGS, HOST_NAME, HOST_ORG, INTERESTS, TIMES } from '../data'
 import { go, setState, useStore } from '../store'
-import { Note, Steps, TopBar } from '../ui'
+import { Buddy, Note, Steps, TopBar } from '../ui'
 
 export function Start() {
   const [code, setCode] = useState('')
@@ -17,13 +17,11 @@ export function Start() {
     <main className="page">
       <TopBar />
       <section className="hero">
-        <div className="hero__dots" aria-hidden>
-          <span /> <span /> <span /> <span /> <span />
-        </div>
+        <Buddy mood="wave" size={150} />
         <h1>
           같은 동네 다섯 명이,
           <br />
-          정해진 날 <em>또 봐요</em>
+          정해진 날 <em className="scribble">또 봐요</em>
         </h1>
         <p>배운 것, 걷는 길, 사는 이야기를 나누는 작은 동네 모임이에요.</p>
       </section>

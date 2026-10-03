@@ -10,7 +10,7 @@ import {
   useStore,
   type Proposal,
 } from '../store'
-import { AvatarStack, DateBlock, DemoTag, Note, TabBar, TopBar } from '../ui'
+import { AvatarStack, Buddy, DateBlock, DemoTag, Note, TabBar, TopBar } from '../ui'
 
 type Filter = 'all' | 'class' | 'group' | 'shop' | string
 const KINDS: { id: Filter; label: string; emoji: string }[] = [
@@ -171,7 +171,7 @@ export function ProgramDetail() {
       </span>
       <h1 className="h1">{p.title}</h1>
       <p className="row-item__meta">
-        {p.dong} · {isClass ? '신청' : '멤버'} {p.taken}/{p.capacity} · {p.schedule}
+        {p.dong} · {isClass ? '신청' : '멤버'} {p.taken}/{p.capacity}명
       </p>
       <p>{p.desc}</p>
 
@@ -436,8 +436,8 @@ export function Welcome() {
   return (
     <main className="page page--welcome">
       <TopBar />
-      <div className="welcome-badge" aria-hidden>
-        🎉
+      <div className="welcome-badge">
+        <Buddy mood="wave" size={170} />
       </div>
       <h1 className="h1 center">
         {g.name}에
@@ -460,13 +460,22 @@ export function Welcome() {
 
       <ul className="promise">
         <li>
-          <span aria-hidden>👥</span> 처음 만남은 사람 많은 <b>공개된 곳</b>에서 해요
+          <span aria-hidden>👥</span>
+          <span>
+            처음 만남은 사람 많은 <b>공개된 곳</b>에서 해요
+          </span>
         </li>
         <li>
-          <span aria-hidden>🙋</span> 진행자 <b>{g.host} 님</b>이 함께 나가요
+          <span aria-hidden>🙋</span>
+          <span>
+            진행자 <b>{g.host} 님</b>이 함께 나가요
+          </span>
         </li>
         <li>
-          <span aria-hidden>🚫</span> 모임원끼리 <b>돈을 주고받지 않아요</b>. 물건 권유도 안 돼요
+          <span aria-hidden>🚫</span>
+          <span>
+            모임원끼리 <b>돈을 주고받지 않아요</b>. 물건 권유도 안 돼요
+          </span>
         </li>
       </ul>
 

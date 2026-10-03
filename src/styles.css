@@ -505,3 +505,141 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 .row-item__next { font-size: .8rem; font-weight: 700; color: var(--teal); }
 .next-group .btn { margin-top: 8px; }
 .mini-card__next { color: var(--teal) !important; font-weight: 700; }
+
+/* ════════ 또봄 손그림 테마 ════════
+   둥근 Jua 제목 + 잘 읽히는 Noto Sans KR 본문, 진한 테두리와 어긋난 그림자의 스티커 느낌. */
+:root {
+  --edge: #15323d;
+  --pop: 3px 3px 0 var(--edge);
+  font-family: 'Noto Sans KR', system-ui, sans-serif;
+  font-weight: 500;
+}
+html, body { background: #e4eef1; }
+.app, .host { background: var(--cloud); }
+
+/* 글꼴: 제목·버튼·이름은 Jua (굵기 하나뿐이라 400 고정) */
+.h1, .h2, .btn, .brand, .loc, .hero h1, .tabbar button, .row-item__title, .meet-card__when,
+.send__label, .checkin__what, .meetup__title, .group-card h2, .menu__item b, .role b,
+.segments button, .cat-row button, .date-block b, .fab, .cta-bar__info b, .top-tabs button,
+.host-card__name, .propose-banner b, .mini-card b, .stats b, .chip, .choice, .interest {
+  font-family: 'Jua', 'Noto Sans KR', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.h1 { font-size: 1.75rem; line-height: 1.3; }
+.h2 { font-size: 1.25rem; }
+.sub, .fine { font-weight: 400; }
+.eyebrow { font-size: .85rem; color: var(--teal-deep); }
+
+/* 손으로 그은 물결 밑줄 */
+.scribble {
+  padding-bottom: 6px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8 Q 12 2 22 7 T 42 7 T 62 7 T 82 7 T 102 7 T 118 6' fill='none' stroke='%23FF6F7D' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E") bottom / 100% 12px no-repeat;
+}
+.hero .scribble { color: var(--peach); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8 Q 12 2 22 7 T 42 7 T 62 7 T 82 7 T 102 7 T 118 6' fill='none' stroke='%23FFD6C8' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E"); }
+
+/* 마스코트 */
+.buddy { display: block; flex-shrink: 0; overflow: visible; }
+.brand { gap: 6px; font-size: 1.35rem; }
+.brand .buddy { margin: -4px 0; }
+.hero { padding-top: 20px; border-bottom: 3px solid var(--edge); }
+.hero .buddy { margin: 0 0 10px -6px; animation: bob 3s ease-in-out infinite; }
+.welcome-badge { display: grid; place-items: center; margin-top: 4px; }
+.welcome-badge .buddy, .empty .buddy { margin: 0 auto; animation: bob 3s ease-in-out infinite; }
+.send-head { display: flex; align-items: center; gap: 10px; }
+@keyframes bob { 50% { transform: translateY(-5px) rotate(-2deg); } }
+@media (prefers-reduced-motion: reduce) { .buddy { animation: none !important; } }
+
+/* 스티커 버튼: 누르면 꾹 눌림 */
+.btn { border-radius: 18px; }
+.btn--primary, .btn--coral, .btn--ghost, .btn--rsvp, .btn--outline-danger, .btn--soft, .fab {
+  border: 2.5px solid var(--edge);
+  box-shadow: var(--pop);
+}
+.btn--ghost { color: var(--ink); background: var(--surface); }
+.btn--soft { background: var(--aqua-soft); color: var(--ink); }
+.btn:active:not(:disabled), .fab:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--edge); }
+.btn:disabled { box-shadow: none; border-style: dashed; }
+.btn--rsvp.on { background: var(--teal); }
+
+/* 스티커 카드 */
+.meet-card, .send, .interest, .menu__item, .role, .choice, .next-group, .propose-banner,
+.empty, .bridge, .promise li, .detail-hero, .cta-bar .btn {
+  border: 2.5px solid var(--edge) !important;
+  box-shadow: var(--pop);
+}
+.card { border: 2px solid #c8d8dd; border-radius: 22px; }
+.meet-card { background: var(--peach-soft); }
+.interest.on, .role.on, .choice.on { box-shadow: 1px 1px 0 var(--edge); transform: translate(2px, 2px); }
+.chip { border-width: 2.5px; }
+.chip.on { border-color: var(--edge); background: var(--aqua); color: var(--ink); }
+.bridge { background: var(--peach); font-size: .85rem; transform: rotate(-1deg); }
+.empty { background: var(--surface); }
+.promise li { border-radius: 18px; }
+.note { border-radius: 18px; border: 2px dashed #a9c4cc; background: var(--surface); }
+.note--warm { border-color: var(--coral); background: var(--peach-soft); }
+
+/* 안부 보내기 버튼: 크게, 살짝 기울여 손으로 붙인 느낌 */
+.send { min-height: 112px; border-radius: 26px; }
+.send:nth-child(1) { transform: rotate(-.8deg); }
+.send:nth-child(3) { transform: rotate(.8deg); }
+.send:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--edge); }
+.send__label { font-size: 1.5rem; }
+
+/* 목록: 썸네일을 엇갈려 기울인 폴라로이드 */
+.thumb { border: 2.5px solid var(--edge); box-shadow: 2px 2px 0 var(--edge); }
+.rows li:nth-child(odd) .thumb { transform: rotate(-3deg); }
+.rows li:nth-child(even) .thumb { transform: rotate(2.5deg); }
+.row-item__title { font-size: 1.2rem; }
+.row-item__desc { font-size: .9rem; }
+.row-item__next { font-size: .85rem; }
+.cat-row__icon { border: 2.5px solid transparent; }
+.cat-row button.on .cat-row__icon { border-color: var(--edge); background: var(--aqua); box-shadow: 2px 2px 0 var(--edge); }
+.loc-bar { border-bottom: 2px solid var(--edge); }
+.fab { background: var(--coral); }
+
+/* 배지: 작은 스티커 */
+.badges > span { font-size: .72rem; padding: 3px 10px; border: 1.5px solid var(--edge); }
+.badge-host { background: var(--surface); }
+.badge-match { background: var(--aqua); color: var(--ink); }
+.demo-pill { font-family: 'Jua', sans-serif; font-weight: 400; font-size: .8rem; border: 2px solid var(--edge); transform: rotate(3deg); }
+.demo-tag { border-style: dashed; font-size: .7rem; }
+
+/* 달력 모양 날짜 */
+.date-block { overflow: hidden; padding: 0 0 6px; border: 2.5px solid var(--edge); box-shadow: 2px 2px 0 var(--edge); }
+.date-block small:first-child { width: 100%; text-align: center; background: var(--coral); color: var(--ink); padding: 3px 0; margin-bottom: 2px; font-size: .7rem; }
+.date-block b { font-size: 1.7rem; }
+.date-block small:last-child { color: var(--sub); }
+
+.avatar { border: 2px solid var(--edge); }
+.avatar-stack > .avatar + .avatar { margin-left: -8px; }
+
+/* 하단 탭: 고른 탭은 피치색 알약 */
+.tabbar { border-top: 2.5px solid var(--edge); }
+.tabbar button { font-size: .9rem; color: var(--sub); }
+.tabbar button span { display: grid; place-items: center; width: 56px; height: 36px; border-radius: 14px; font-size: 1.45rem; }
+.tabbar button.on { box-shadow: none; color: var(--ink); }
+.tabbar button.on span { background: var(--peach); border: 2px solid var(--edge); }
+
+/* 안부 카드 */
+.checkin { border: 2px solid #c8d8dd; border-left: 10px solid var(--aqua); }
+.checkin--talk { border-left-color: var(--coral); }
+.checkin--rest { border-left-color: var(--peach); }
+.toast { border: 2.5px solid var(--edge); box-shadow: var(--pop); background: var(--teal); font-family: 'Jua', sans-serif; font-weight: 400; font-size: 1.1rem; }
+
+/* 입력 */
+.input { border: 2.5px solid #b9cdd3; border-radius: 18px; font-weight: 500; }
+.input:focus { border-color: var(--edge); box-shadow: var(--pop); }
+.steps span { height: 10px; border: 2px solid var(--edge); background: var(--surface); }
+.steps span.on { background: var(--coral); }
+.field__label, .list-head, .who-goes b, .checkin__who { font-family: 'Jua', 'Noto Sans KR', sans-serif; font-weight: 400; }
+.field__label { font-size: 1.15rem; }
+.interest.on, .role.on { background: var(--aqua); } .interest__check { background: var(--edge); }
+.checkin__who .checkin__when { margin: 0; font-family: "Noto Sans KR", sans-serif; font-weight: 400; }
+.toast { bottom: auto; top: 76px; }
+.reply-btns .btn { white-space: nowrap; padding: 0 10px; font-size: 1.05rem; }
+.rsvp { grid-template-columns: 1fr 1.3fr; }
+.btn--rsvp { white-space: nowrap; padding: 0 8px; }
+.who-goes { display: flex; flex-direction: column; gap: 4px; }
+.who-goes__row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.who-goes p { text-align: left; }
