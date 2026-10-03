@@ -16,7 +16,7 @@ import {
   type CheckinKind,
   type ReplyKind,
 } from '../store'
-import { CHECKIN, DemoTag, Note, REPLY, ResetLink, TabBar, TopBar } from '../ui'
+import { AvatarStack, CHECKIN, DateBlock, DemoTag, Note, REPLY, ResetLink, TabBar, TopBar } from '../ui'
 
 function useGroup() {
   const s = useStore()
@@ -101,15 +101,28 @@ export function Home() {
       <TopBar />
       <p className="hello">{me} 님, 반가워요</p>
       <GroupSwitcher />
-      <h1 className="h1">{g.name}</h1>
+      <div className="group-head">
+        <h1 className="h1">{g.name}</h1>
+        <div className="member-strip">
+          <AvatarStack names={[me, ...g.members.map((m) => m.name)]} max={5} />
+          <span>
+            {g.dong} · 멤버 {g.members.length + 1}명
+          </span>
+        </div>
+      </div>
 
       {next ? (
         <button className="card meet-card meet-card--link" onClick={() => go('meet')}>
-          <p className="eyebrow">다음 만남{next.proposedBy && ` · ${next.proposedBy} 님 제안`}</p>
-          <p className="meet-card__when">
-            {next.date} {next.time}
-          </p>
-          <p className="meet-card__where">📍 {next.place}</p>
+          <p className="eyebrow">다음 만남{next.proposedBy && ` · ${next.proposedBy === me ? '내가' : `${next.proposedBy} 님`} 제안`}</p>
+          <span className="sched sched--bare">
+            <DateBlock date={next.date} />
+            <span>
+              <b>{next.activity}</b>
+              <small>
+                {next.time} · {next.place}
+              </small>
+            </span>
+          </span>
           <p className="meet-card__status">{rsvpLabel(rsvps[next.id]?.[me])}</p>
         </button>
       ) : (
@@ -272,14 +285,16 @@ function MeetupCard({ m, me, host, people }: { m: Meetup; me: string; host: stri
   return (
     <article className="card meetup">
       <p className="eyebrow">{m.proposedBy === me ? '내가 제안한 만남' : m.proposedBy ? `${m.proposedBy} 님 제안` : '진행자가 정한 만남'}</p>
-      <h2 className="meetup__title">{m.activity}</h2>
+      <div className="sched sched--bare">
+        <DateBlock date={m.date} />
+        <span>
+          <b className="meetup__title">{m.activity}</b>
+          <small>
+            {m.time} · {m.place}
+          </small>
+        </span>
+      </div>
       <div className="detail">
-        <p>
-          <span aria-hidden>🗓️</span> {m.date} {m.time}
-        </p>
-        <p>
-          <span aria-hidden>📍</span> {m.place}
-        </p>
         {m.bring && m.bring !== '없음' && (
           <p>
             <span aria-hidden>🎒</span> 준비물: {m.bring}
@@ -300,7 +315,11 @@ function MeetupCard({ m, me, host, people }: { m: Meetup; me: string; host: stri
         </button>
       </div>
       <p className="who-goes">
-        <b>갈게요</b> {yes.length ? yes.map(name).join(', ') : '아직 없어요'}
+        {yes.length > 0 && <AvatarStack names={yes} max={5} />}
+        <b>
+          참여 {yes.length}/{people.length}
+        </b>{' '}
+        {yes.length ? yes.map(name).join(', ') : '아직 없어요'}
         {no.length > 0 && (
           <>
             <br />

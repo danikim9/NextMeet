@@ -96,6 +96,32 @@ export function Host() {
         <p className="fine">대응 순서(안): 신고자 연락 → 사실 확인 → 경고, 모임에서 내보내기 또는 가게 연계 중단. 신고자 정보는 상대에게 알리지 않아요.</p>
       </section>
 
+      <section className="host__section">
+        <h2 className="h2">
+          일자리 관심 표시 {s.jobInterests.length > 0 && <span className="badge">{s.jobInterests.length}</span>}
+        </h2>
+        {s.jobInterests.length === 0 ? (
+          <p className="fine">아직 없어요. 회원 화면 → 둘러보기 → 일자리에서 ‘관심 있어요’로 시연해 보세요.</p>
+        ) : (
+          <ul className="host-list">
+            {s.jobInterests.map((x) => {
+              const j = s.jobs.find((y) => y.id === x.jobId)
+              return (
+                <li key={x.jobId + x.by} className="card report new">
+                  <p>
+                    <b>{x.by} 님</b> → {j?.title}
+                  </p>
+                  <p className="fine">
+                    {j?.org} · {x.when}
+                  </p>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+        <p className="fine">할 일(안): 회원에게 전화로 근무 조건 안내 → 원하면 일하는 곳 연결. 또봄은 지원·계약을 대신하지 않아요.</p>
+      </section>
+
       <GroupsSection />
 
       <section className="host__section">

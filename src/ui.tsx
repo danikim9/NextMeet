@@ -107,3 +107,41 @@ export function ResetLink() {
     </button>
   )
 }
+
+const AVATAR_TONES = ['aqua', 'peach', 'coral', 'teal'] as const
+
+/** 사진 대신 이름 첫 글자로 만든 동그라미 */
+export function Avatar({ name, size = 36 }: { name: string; size?: number }) {
+  const tone = AVATAR_TONES[[...name].reduce((a, ch) => a + ch.charCodeAt(0), 0) % AVATAR_TONES.length]
+  return (
+    <span className={`avatar avatar--${tone}`} style={{ width: size, height: size, fontSize: size * 0.42 }} aria-hidden>
+      {name.slice(0, 1)}
+    </span>
+  )
+}
+
+export function AvatarStack({ names, max = 4 }: { names: string[]; max?: number }) {
+  const shown = names.slice(0, max)
+  const rest = names.length - shown.length
+  return (
+    <span className="avatar-stack">
+      {shown.map((n) => (
+        <Avatar key={n} name={n} />
+      ))}
+      {rest > 0 && <span className="avatar avatar--more">+{rest}</span>}
+    </span>
+  )
+}
+
+/** '10월 13일 (화)' → 달력 모양 날짜 블록 */
+export function DateBlock({ date }: { date: string }) {
+  const m = date.match(/(\d+)월\s*(\d+)일\s*\((.)\)/)
+  if (!m) return <span className="date-block date-block--text">{date}</span>
+  return (
+    <span className="date-block" aria-hidden>
+      <small>{m[1]}월</small>
+      <b>{m[2]}</b>
+      <small>{m[3]}요일</small>
+    </span>
+  )
+}

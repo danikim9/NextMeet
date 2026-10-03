@@ -1,23 +1,74 @@
 import { useState } from 'react'
-import { DONGS, HOST_NAME, HOST_TYPE, PUBLIC_PLACES, type Program } from '../data'
-import { go, joinGroup, openGroup, openProgram, submitProposal, toggleEnroll, useStore, type Proposal } from '../store'
-import { Note, TabBar, TopBar } from '../ui'
+import { DONGS, HOST_NAME, HOST_TYPE, INTERESTS, PUBLIC_PLACES, type Program } from '../data'
+import {
+  go,
+  joinGroup,
+  openGroup,
+  openJob,
+  openProgram,
+  submitProposal,
+  toggleEnroll,
+  toggleJobInterest,
+  useStore,
+  type Proposal,
+} from '../store'
+import { AvatarStack, DateBlock, DemoTag, Note, TabBar, TopBar } from '../ui'
 
-type Filter = 'all' | 'class' | 'group' | 'shop'
-const FILTERS: { id: Filter; label: string }[] = [
-  { id: 'all', label: '전체' },
-  { id: 'class', label: '강좌' },
-  { id: 'group', label: '모임' },
-  { id: 'shop', label: '동네 가게' },
+type Filter = 'all' | 'class' | 'group' | 'shop' | string
+const KINDS: { id: Filter; label: string; emoji: string }[] = [
+  { id: 'all', label: '전체', emoji: '🏘️' },
+  { id: 'class', label: '강좌', emoji: '🎓' },
+  { id: 'group', label: '모임', emoji: '👥' },
+  { id: 'shop', label: '동네 가게', emoji: '🏪' },
 ]
+const CATEGORIES = [...KINDS, ...INTERESTS.map((i) => ({ id: i.id, label: i.label, emoji: i.emoji }))]
 
 const isFull = (p: Program) => p.taken >= p.capacity
 
+/** 둘러보기: 위치 헤더 → 모임·강좌 / 일자리 → 카테고리 → 목록 → 떠 있는 제안 버튼 */
 export function Explore() {
-  const { programs, profile, enrolled, groupIds, proposals } = useStore()
+  const { profile } = useStore()
+  const [tab, setTab] = useState<'programs' | 'jobs'>(() => {
+    try {
+      return sessionStorage.getItem('ttobom-tab') === 'jobs' ? 'jobs' : 'programs'
+    } catch {
+      return 'programs'
+    }
+  })
+  const pick = (t: 'programs' | 'jobs') => {
+    setTab(t)
+    try {
+      sessionStorage.setItem('ttobom-tab', t)
+    } catch {
+      /* ignore */
+    }
+  }
+
+  return (
+    <main className="page page--tabbed page--list">
+      <header className="loc-bar">
+        <span className="loc">📍 {profile.dong || '우리 동네'}</span>
+        <span className="demo-pill">데모</span>
+      </header>
+      <div className="top-tabs" role="tablist">
+        <button role="tab" aria-selected={tab === 'programs'} className={tab === 'programs' ? 'on' : ''} onClick={() => pick('programs')}>
+          모임·강좌
+        </button>
+        <button role="tab" aria-selected={tab === 'jobs'} className={tab === 'jobs' ? 'on' : ''} onClick={() => pick('jobs')}>
+          일자리
+        </button>
+      </div>
+      {tab === 'programs' ? <ProgramList /> : <JobList />}
+      <TabBar active="explore" />
+    </main>
+  )
+}
+
+function ProgramList() {
+  const { programs, profile, enrolled, groupIds, groups, proposals } = useStore()
   const [filter, setFilter] = useState<Filter>('all')
 
-  // 실제 "매칭"이 아니라 단순 정렬: 고른 관심사 겹침 → 같은 동네 → 편한 시간 순
+  // 실제 "매칭"이 아니라 단순 정렬: 새로 올라옴 → 고른 관심사 겹침 → 같은 동네 → 편한 시간 순
   const score = (p: Program) =>
     (p.isNew ? 100 : 0) +
     p.interests.filter((i) => profile.interests.includes(i)).length * 10 +
@@ -25,69 +76,69 @@ export function Explore() {
     (profile.times.includes(p.time) ? 2 : 0)
 
   const list = programs
-    .filter((p) => (filter === 'all' ? true : filter === 'shop' ? p.hostType === 'shop' : p.kind === filter))
+    .filter((p) =>
+      filter === 'all' ? true : filter === 'shop' ? p.hostType === 'shop' : filter === 'class' || filter === 'group' ? p.kind === filter : p.interests.includes(filter),
+    )
     .sort((a, b) => score(b) - score(a))
   const mine = proposals.filter((p) => p.by === (profile.name || '나'))
 
   return (
-    <main className="page page--tabbed">
-      <TopBar />
-      <h1 className="h1">우리 동네 배움과 모임</h1>
-      <p className="sub">{profile.dong} 근처 · 고르신 관심사와 맞는 것부터 보여 드려요. 모두 복지관 진행자가 확인했어요.</p>
-
-      <div className="segments" role="tablist">
-        {FILTERS.map((f) => (
-          <button key={f.id} role="tab" aria-selected={filter === f.id} className={filter === f.id ? 'on' : ''} onClick={() => setFilter(f.id)}>
-            {f.label}
+    <>
+      <div className="cat-row" role="tablist" aria-label="종류">
+        {CATEGORIES.map((c) => (
+          <button key={c.id} role="tab" aria-selected={filter === c.id} className={filter === c.id ? 'on' : ''} onClick={() => setFilter(c.id)}>
+            <span className="cat-row__icon" aria-hidden>
+              {c.emoji}
+            </span>
+            {c.label}
           </button>
         ))}
       </div>
 
-      <ul className="program-list">
+      <p className="list-head">
+        {profile.dong} 근처 · 관심사 맞는 순 <span>모두 진행자가 확인했어요</span>
+      </p>
+
+      {list.length === 0 && <p className="fine pad">아직 이 종류는 없어요. 직접 제안해 보세요!</p>}
+      <ul className="rows">
         {list.map((p) => {
           const joined = p.kind === 'group' ? groupIds.includes(p.groupId ?? '') : enrolled.includes(p.id)
           const shared = p.interests.some((i) => profile.interests.includes(i))
+          const g = groups.find((x) => x.id === p.groupId)
           return (
             <li key={p.id}>
-              <button className="card program" onClick={() => openProgram(p.id)}>
-                <span className={`program__thumb program__thumb--${p.kind}`} aria-hidden>
+              <button className="row-item" onClick={() => openProgram(p.id)}>
+                <span className={`thumb thumb--${p.kind}`} aria-hidden>
                   {p.emoji}
                 </span>
-                <span className="program__body">
+                <span className="row-item__body">
+                  <span className="row-item__title">{p.title}</span>
+                  <span className="row-item__desc">{p.desc}</span>
+                  <span className="row-item__meta">
+                    {p.dong} · {p.kind === 'group' ? '멤버' : '신청'} {p.taken}/{p.capacity} · {p.cost.split(' (')[0]}
+                  </span>
                   <span className="badges">
                     <span className={`badge-kind badge-kind--${p.kind}`}>{p.kind === 'class' ? '강좌' : '모임'}</span>
-                    <span className={`badge-host badge-host--${p.hostType}`}>
-                      {HOST_TYPE[p.hostType].emoji} {HOST_TYPE[p.hostType].label}
-                    </span>
+                    <span className={`badge-host badge-host--${p.hostType}`}>{HOST_TYPE[p.hostType].label}</span>
                     {p.isNew && <span className="badge-new">새로 올라옴</span>}
                     {shared && <span className="badge-match">관심사</span>}
-                  </span>
-                  <span className="program__title">{p.title}</span>
-                  <span className="program__meta">{p.schedule}</span>
-                  <span className="program__meta">📍 {p.place}</span>
-                  <span className="program__foot">
-                    <span>{p.cost.split(' (')[0]}</span>
-                    <span className={isFull(p) ? 'full' : ''}>
-                      {joined ? '✓ 신청함' : isFull(p) ? '자리 없음' : `${p.capacity - p.taken}자리 남음`}
-                    </span>
+                    {joined && <span className="badge-joined">✓ {p.kind === 'group' ? '가입함' : '신청함'}</span>}
+                    {!joined && isFull(p) && <span className="badge-host">자리 없음</span>}
                   </span>
                 </span>
+                {p.kind === 'group' && g && g.members.length > 0 && (
+                  <span className="row-item__side">
+                    <AvatarStack names={g.members.map((m) => m.name)} max={2} />
+                  </span>
+                )}
               </button>
             </li>
           )
         })}
       </ul>
 
-      <button className="card propose-banner" onClick={() => go('propose')}>
-        <span aria-hidden>💡</span>
-        <span>
-          <b>가르쳐 드리고 싶은 게 있으세요?</b>
-          <small>동네 가게, 이웃 강사, 주민 누구나 강좌·모임을 제안할 수 있어요</small>
-        </span>
-      </button>
-
       {mine.length > 0 && (
-        <section className="card">
+        <section className="card mx">
           <p className="eyebrow">내가 보낸 제안</p>
           <ul className="mini-list">
             {mine.map((p) => (
@@ -101,24 +152,159 @@ export function Explore() {
           </ul>
         </section>
       )}
-      <TabBar active="explore" />
+
+      <button className="fab" onClick={() => go('propose')}>
+        <span aria-hidden>＋</span> 제안하기
+      </button>
+    </>
+  )
+}
+
+function JobList() {
+  const { jobs, profile, jobInterests } = useStore()
+  const me = profile.name || '나'
+  const sorted = [...jobs].sort((a, b) => (b.dong === profile.dong ? 1 : 0) - (a.dong === profile.dong ? 1 : 0))
+
+  return (
+    <>
+      <div className="job-intro mx">
+        <p>
+          <b>내 경험을 살리는 동네 일자리</b>
+        </p>
+        <p className="fine">
+          복지관·주민센터의 어르신 일자리와 동네 가게 일을 소개해요. 또봄은 지원을 받지 않아요. ‘관심 있어요’를 누르면 진행자가 전화로 자세히
+          안내해 드려요. <DemoTag>모두 가상 예시</DemoTag>
+        </p>
+      </div>
+      <ul className="rows">
+        {sorted.map((j) => {
+          const on = jobInterests.some((x) => x.jobId === j.id && x.by === me)
+          return (
+            <li key={j.id}>
+              <button className="row-item" onClick={() => openJob(j.id)}>
+                <span className="thumb thumb--job" aria-hidden>
+                  {j.emoji}
+                </span>
+                <span className="row-item__body">
+                  <span className="row-item__title">{j.title}</span>
+                  <span className="row-item__desc">{j.org}</span>
+                  <span className="row-item__meta">
+                    {j.dong} · {j.hours}
+                  </span>
+                  <span className="badges">
+                    <span className={`badge-host ${j.orgType === 'public' ? 'badge-host--center' : 'badge-host--shop'}`}>
+                      {j.orgType === 'public' ? '공공 일자리' : '동네 가게'}
+                    </span>
+                    <span className="badge-host">{j.effort.split(' · ')[0]}</span>
+                    <span className="badge-host">{j.openings}명 모집</span>
+                    {on && <span className="badge-joined">✓ 관심 표시함</span>}
+                  </span>
+                </span>
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+      <div className="mx">
+        <Note tone="warm">
+          <b>이런 건 일자리가 아니에요</b>
+          <br />
+          먼저 돈을 내라는 일, 물건을 사야 시작할 수 있는 일, 투자·가입을 권하는 일. 이런 연락을 받으면 ‘도움 → 불편한 일 알리기’로 알려 주세요.
+        </Note>
+      </div>
+    </>
+  )
+}
+
+export function JobDetail() {
+  const { jobs, jobId, jobInterests, profile } = useStore()
+  const j = jobs.find((x) => x.id === jobId)
+  if (!j) return null
+  const on = jobInterests.some((x) => x.jobId === j.id && x.by === (profile.name || '나'))
+
+  return (
+    <main className="page page--cta">
+      <div className="cover cover--job">
+        <button className="cover__back" onClick={() => go('explore')} aria-label="이전으로">
+          ←
+        </button>
+        <span aria-hidden>{j.emoji}</span>
+      </div>
+      <span className="badges">
+        <span className={`badge-host ${j.orgType === 'public' ? 'badge-host--center' : 'badge-host--shop'}`}>{j.orgType === 'public' ? '공공 일자리' : '동네 가게'}</span>
+        <DemoTag>가상 예시</DemoTag>
+      </span>
+      <h1 className="h1">{j.title}</h1>
+      <p className="sub">{j.org}</p>
+      <p>{j.desc}</p>
+
+      <dl className="card facts facts--detail">
+        <div>
+          <dt>언제</dt>
+          <dd>{j.hours}</dd>
+        </div>
+        <div>
+          <dt>기간</dt>
+          <dd>{j.period}</dd>
+        </div>
+        <div>
+          <dt>어디</dt>
+          <dd>{j.place}</dd>
+        </div>
+        <div>
+          <dt>몸 쓰기</dt>
+          <dd>{j.effort}</dd>
+        </div>
+        <div>
+          <dt>보수</dt>
+          <dd>{j.pay}</dd>
+        </div>
+        <div>
+          <dt>모집</dt>
+          <dd>{j.openings}명</dd>
+        </div>
+      </dl>
+
+      <div className="card host-card">
+        <p className="eyebrow">이런 분께 잘 맞아요</p>
+        <p>{j.good}</p>
+      </div>
+
+      <Note>
+        또봄은 일자리를 소개만 해요. 지원서·계약은 일하는 곳과 직접 해요. 진행자가 근무 조건을 먼저 확인했어요(데모에서는 확인 절차 없음).
+      </Note>
+
+      <div className="cta-bar">
+        <span className="cta-bar__info">
+          <b>{j.openings}명 모집</b>
+          <small>{j.dong}</small>
+        </span>
+        <button className={`btn ${on ? 'btn--ghost' : 'btn--primary'}`} onClick={() => toggleJobInterest(j.id)}>
+          {on ? '관심 거두기' : '관심 있어요'}
+        </button>
+      </div>
     </main>
   )
 }
 
 export function ProgramDetail() {
-  const { programs, programId, enrolled, groupIds, groups } = useStore()
+  const { programs, programId, enrolled, groupIds, groups, meetups, profile } = useStore()
   const p = programs.find((x) => x.id === programId)
   if (!p) return null
   const isClass = p.kind === 'class'
   const joined = isClass ? enrolled.includes(p.id) : groupIds.includes(p.groupId ?? '')
   const next = isClass && p.groupId ? programs.find((x) => x.kind === 'group' && x.groupId === p.groupId) : undefined
   const group = groups.find((g) => g.id === p.groupId)
+  const members = group ? [...group.members.map((m) => m.name), ...(groupIds.includes(group.id) ? [profile.name || '나'] : [])] : []
+  const upcoming = !isClass && group ? (meetups[group.id] ?? []) : []
+  const paid = !p.cost.startsWith('무료')
 
   return (
-    <main className="page">
-      <TopBar back="explore" />
-      <div className={`detail-hero detail-hero--${p.kind}`}>
+    <main className="page page--cta">
+      <div className={`cover cover--${p.kind}`}>
+        <button className="cover__back" onClick={() => go('explore')} aria-label="이전으로">
+          ←
+        </button>
         <span aria-hidden>{p.emoji}</span>
       </div>
       <span className="badges">
@@ -128,7 +314,37 @@ export function ProgramDetail() {
         </span>
       </span>
       <h1 className="h1">{p.title}</h1>
+      <p className="row-item__meta">
+        {p.dong} · {isClass ? '신청' : '멤버'} {p.taken}/{p.capacity} · {p.schedule}
+      </p>
       <p>{p.desc}</p>
+
+      {!isClass && members.length > 0 && (
+        <div className="member-strip">
+          <AvatarStack names={members} max={5} />
+          <span>
+            {members.slice(0, 2).map((n) => `${n} 님`).join(', ')}
+            {members.length > 2 && ` 외 ${members.length - 2}명`}이 함께해요
+          </span>
+        </div>
+      )}
+
+      {upcoming.length > 0 && (
+        <section className="section">
+          <h2 className="h2">다가오는 일정</h2>
+          {upcoming.slice(0, 2).map((m) => (
+            <div key={m.id} className="card sched">
+              <DateBlock date={m.date} />
+              <span>
+                <b>{m.activity}</b>
+                <small>
+                  {m.time} · {m.place}
+                </small>
+              </span>
+            </div>
+          ))}
+        </section>
+      )}
 
       <dl className="card facts facts--detail">
         <div>
@@ -138,12 +354,6 @@ export function ProgramDetail() {
         <div>
           <dt>어디</dt>
           <dd>{p.place}</dd>
-        </div>
-        <div>
-          <dt>인원</dt>
-          <dd>
-            {p.capacity}명 중 {p.taken}명 {isClass ? '신청' : '참여 중'}
-          </dd>
         </div>
         <div>
           <dt>비용</dt>
@@ -171,25 +381,27 @@ export function ProgramDetail() {
           가게에서 물건 구매를 권하지 않기로 약속했어요. 비용은 위에 적힌 재료비뿐이에요. 다른 권유를 받으면 ‘도움 → 불편한 일 알리기’로 알려 주세요.
         </Note>
       )}
+      {isClass && paid && <p className="fine">앱에서는 결제하지 않아요. 재료비는 현장에서 직접 내요.</p>}
 
-      {isClass ? (
-        <>
+      <div className="cta-bar">
+        <span className="cta-bar__info">
+          <b>{p.cost.split(' (')[0]}</b>
+          <small>{isFull(p) ? '자리 없음' : `${p.capacity - p.taken}자리 남음`}</small>
+        </span>
+        {isClass ? (
           <button className={`btn ${joined ? 'btn--ghost' : 'btn--primary'}`} disabled={!joined && isFull(p)} onClick={() => toggleEnroll(p.id)}>
-            {joined ? '신청 취소하기' : isFull(p) ? '자리가 다 찼어요' : '이 강좌 신청하기'}
+            {joined ? '신청 취소' : isFull(p) ? '마감' : '신청하기'}
           </button>
-          {p.cost !== '무료' && !p.cost.startsWith('무료') && (
-            <p className="fine center">앱에서는 결제하지 않아요. 재료비는 첫날 현장에서 직접 내요.</p>
-          )}
-        </>
-      ) : joined && group ? (
-        <button className="btn btn--primary" onClick={() => openGroup(group.id)}>
-          내 모임으로 가기
-        </button>
-      ) : (
-        <button className="btn btn--primary" disabled={isFull(p) || !group} onClick={() => group && joinGroup(group.id)}>
-          {isFull(p) ? '자리가 다 찼어요' : '이 모임에 들어갈래요'}
-        </button>
-      )}
+        ) : joined && group ? (
+          <button className="btn btn--primary" onClick={() => openGroup(group.id)}>
+            내 모임으로
+          </button>
+        ) : (
+          <button className="btn btn--primary" disabled={isFull(p) || !group} onClick={() => group && joinGroup(group.id)}>
+            {isFull(p) ? '마감' : '가입하기'}
+          </button>
+        )}
+      </div>
     </main>
   )
 }

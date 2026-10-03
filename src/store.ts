@@ -2,11 +2,13 @@ import { useSyncExternalStore } from 'react'
 import {
   HOST_NAME,
   SEED_GROUPS,
+  SEED_JOBS,
   SEED_MEETUPS,
   SEED_PROGRAMS,
   SEED_RSVPS,
   type Group,
   type HostType,
+  type Job,
   type Meetup,
   type Program,
 } from './data'
@@ -61,6 +63,7 @@ export type Screen =
   | 'interests'
   | 'explore'
   | 'program'
+  | 'job'
   | 'propose'
   | 'welcome'
   | 'home'
@@ -82,6 +85,10 @@ export type State = {
   programId: string | null
   /** 신청한 강좌 */
   enrolled: string[]
+  jobs: Job[]
+  jobId: string | null
+  /** 관심 있다고 표시한 일자리 → 진행자가 연락 */
+  jobInterests: { jobId: string; by: string; when: string }[]
   groups: Group[]
   programs: Program[]
   meetups: Record<string, Meetup[]>
@@ -92,7 +99,7 @@ export type State = {
   toast: string | null
 }
 
-const KEY = 'ttobom-demo-v2'
+const KEY = 'ttobom-demo-v3'
 
 function seed(): State {
   return {
@@ -102,6 +109,9 @@ function seed(): State {
     groupId: null,
     programId: null,
     enrolled: [],
+    jobs: SEED_JOBS,
+    jobId: null,
+    jobInterests: [],
     groups: SEED_GROUPS,
     programs: SEED_PROGRAMS,
     meetups: SEED_MEETUPS,
@@ -195,6 +205,23 @@ const uid = () => Math.random().toString(36).slice(2, 9)
 export function openProgram(id: string) {
   setState((s) => ({ ...s, programId: id, screen: 'program', toast: null }))
   window.scrollTo(0, 0)
+}
+
+export function openJob(id: string) {
+  setState((s) => ({ ...s, jobId: id, screen: 'job', toast: null }))
+  window.scrollTo(0, 0)
+}
+
+export function toggleJobInterest(jobId: string) {
+  setState((s) => {
+    const me = s.profile.name || '나'
+    const on = s.jobInterests.some((x) => x.jobId === jobId && x.by === me)
+    return {
+      ...s,
+      jobInterests: on ? s.jobInterests.filter((x) => !(x.jobId === jobId && x.by === me)) : [{ jobId, by: me, when: now() }, ...s.jobInterests],
+      toast: on ? '관심 표시를 거뒀어요' : '진행자에게 전했어요. 자세한 내용은 전화로 안내해 드려요',
+    }
+  })
 }
 
 export function toggleEnroll(programId: string) {
