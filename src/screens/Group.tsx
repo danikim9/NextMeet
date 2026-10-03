@@ -63,8 +63,9 @@ function NoGroup({ active }: { active: 'home' | 'meet' }) {
 }
 
 function MyClasses() {
-  const { programs, enrolled } = useStore()
+  const { programs, enrolled, groupIds } = useStore()
   const list = programs.filter((p) => enrolled.includes(p.id))
+  const followOf = (groupId?: string) => programs.find((x) => x.kind === 'group' && x.groupId === groupId)
   if (list.length === 0) return null
   return (
     <>
@@ -77,6 +78,11 @@ function MyClasses() {
               <span>
                 <b>{p.title}</b>
                 <small>{p.schedule}</small>
+                {p.groupId && followOf(p.groupId) && (
+                  <small className="mini-card__next">
+                    {groupIds.includes(p.groupId) ? '✓ 같은 반 모임에도 들어가 있어요' : `끝나면 ${followOf(p.groupId)?.title}으로 이어져요 →`}
+                  </small>
+                )}
               </span>
             </button>
           </li>
@@ -416,6 +422,16 @@ export function Help() {
           <span>
             <b>진행자에게 전화하기</b>
             <small>평일 오전 9시~오후 6시</small>
+          </span>
+        </button>
+        <button
+          className="menu__item"
+          onClick={() => showToast('진행자가 동네 노인일자리 수행기관을 안내해 드려요 (데모에서는 연락이 가지 않아요)')}
+        >
+          <span aria-hidden>🧰</span>
+          <span>
+            <b>일거리 문의하기</b>
+            <small>공공 노인일자리는 ‘노인일자리여기’에서도 찾아볼 수 있어요</small>
           </span>
         </button>
         <button className="menu__item" onClick={() => go('propose')}>

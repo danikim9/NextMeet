@@ -434,9 +434,6 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 .pad { padding: 16px 20px; }
 .loc-bar { position: sticky; top: 0; z-index: 6; display: flex; align-items: center; min-height: 64px; padding: 0 20px; background: var(--surface); }
 .loc { font-size: 1.3rem; font-weight: 700; }
-.top-tabs { position: sticky; top: 64px; z-index: 6; display: grid; grid-template-columns: 1fr 1fr; background: var(--surface); border-bottom: 1px solid var(--line); }
-.top-tabs button { min-height: 56px; border: 0; background: none; font-weight: 700; font-size: 1.05rem; color: var(--sub); cursor: pointer; box-shadow: inset 0 -3px 0 transparent; }
-.top-tabs button.on { color: var(--ink); box-shadow: inset 0 -4px 0 var(--teal); }
 
 .cat-row { display: flex; gap: 4px; overflow-x: auto; padding: 16px 14px 8px; scrollbar-width: none; }
 .cat-row::-webkit-scrollbar { display: none; }
@@ -454,7 +451,6 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 .thumb { flex-shrink: 0; width: 84px; height: 84px; border-radius: 16px; display: grid; place-items: center; font-size: 2.3rem; }
 .thumb--class { background: var(--peach); }
 .thumb--group { background: var(--aqua-soft); }
-.thumb--job { background: #e8f0e4; }
 .row-item__body { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
 .row-item__title { font-size: 1.08rem; font-weight: 700; line-height: 1.35; }
 .row-item__desc { font-size: .85rem; color: var(--sub); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -466,14 +462,12 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 .fab { position: fixed; z-index: 9; right: max(16px, calc(50% - 220px + 16px)); bottom: 100px; min-height: 60px; padding: 0 22px; border: 0; border-radius: 999px; background: var(--coral); color: var(--ink); font-weight: 700; font-size: 1.05rem; box-shadow: 0 8px 20px rgb(21 50 61 / .25); cursor: pointer; display: flex; align-items: center; gap: 6px; }
 .fab span { font-size: 1.4rem; line-height: 1; }
 
-.job-intro { background: #eef5ea; border-radius: 16px; padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; }
 
 /* 상세: 커버 + 하단 고정 버튼 */
 .page--cta { padding-bottom: 120px; }
 .cover { position: relative; margin: 0 -20px; height: 200px; display: grid; place-items: center; font-size: 5rem; }
 .cover--class { background: var(--peach); }
 .cover--group { background: var(--aqua-soft); }
-.cover--job { background: #e8f0e4; }
 .cover__back { position: absolute; top: 12px; left: 12px; width: 52px; height: 52px; border-radius: 50%; border: 0; background: rgb(255 255 255 / .9); font-size: 1.4rem; font-weight: 700; color: var(--ink); cursor: pointer; }
 .cta-bar { position: fixed; z-index: 10; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 440px; display: flex; gap: 14px; align-items: center; padding: 12px 20px calc(12px + env(safe-area-inset-bottom)); background: var(--surface); border-top: 1px solid var(--line); }
 .cta-bar__info { display: flex; flex-direction: column; flex-shrink: 0; }
@@ -503,3 +497,11 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 .date-block b { font-size: 1.6rem; color: var(--ink); }
 .date-block--text { font-size: .8rem; text-align: center; }
 .who-goes { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+
+/* ── 강좌 → 모임 연결 ── */
+.bridge { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 12px 14px; border-radius: 16px; background: var(--peach-soft); border: 1px solid var(--peach); font-size: .8rem; font-weight: 700; }
+.bridge > span[aria-hidden] { color: var(--sub); }
+.bridge__step { white-space: nowrap; }
+.row-item__next { font-size: .8rem; font-weight: 700; color: var(--teal); }
+.next-group .btn { margin-top: 8px; }
+.mini-card__next { color: var(--teal) !important; font-weight: 700; }

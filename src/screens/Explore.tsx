@@ -4,11 +4,9 @@ import {
   go,
   joinGroup,
   openGroup,
-  openJob,
   openProgram,
   submitProposal,
   toggleEnroll,
-  toggleJobInterest,
   useStore,
   type Proposal,
 } from '../store'
@@ -25,40 +23,23 @@ const CATEGORIES = [...KINDS, ...INTERESTS.map((i) => ({ id: i.id, label: i.labe
 
 const isFull = (p: Program) => p.taken >= p.capacity
 
-/** 둘러보기: 위치 헤더 → 모임·강좌 / 일자리 → 카테고리 → 목록 → 떠 있는 제안 버튼 */
+/** 둘러보기: 위치 헤더 → 카테고리 → 목록 → 떠 있는 제안 버튼 */
 export function Explore() {
   const { profile } = useStore()
-  const [tab, setTab] = useState<'programs' | 'jobs'>(() => {
-    try {
-      return sessionStorage.getItem('ttobom-tab') === 'jobs' ? 'jobs' : 'programs'
-    } catch {
-      return 'programs'
-    }
-  })
-  const pick = (t: 'programs' | 'jobs') => {
-    setTab(t)
-    try {
-      sessionStorage.setItem('ttobom-tab', t)
-    } catch {
-      /* ignore */
-    }
-  }
-
   return (
     <main className="page page--tabbed page--list">
       <header className="loc-bar">
         <span className="loc">📍 {profile.dong || '우리 동네'}</span>
         <span className="demo-pill">데모</span>
       </header>
-      <div className="top-tabs" role="tablist">
-        <button role="tab" aria-selected={tab === 'programs'} className={tab === 'programs' ? 'on' : ''} onClick={() => pick('programs')}>
-          모임·강좌
-        </button>
-        <button role="tab" aria-selected={tab === 'jobs'} className={tab === 'jobs' ? 'on' : ''} onClick={() => pick('jobs')}>
-          일자리
-        </button>
+      <div className="bridge mx">
+        <span className="bridge__step">🎓 강좌 듣고</span>
+        <span aria-hidden>→</span>
+        <span className="bridge__step">👥 같은 반 모임으로</span>
+        <span aria-hidden>→</span>
+        <span className="bridge__step">💌 안부와 다음 만남</span>
       </div>
-      {tab === 'programs' ? <ProgramList /> : <JobList />}
+      <ProgramList />
       <TabBar active="explore" />
     </main>
   )
@@ -105,6 +86,7 @@ function ProgramList() {
           const joined = p.kind === 'group' ? groupIds.includes(p.groupId ?? '') : enrolled.includes(p.id)
           const shared = p.interests.some((i) => profile.interests.includes(i))
           const g = groups.find((x) => x.id === p.groupId)
+          const follow = p.kind === 'class' && p.groupId ? programs.find((x) => x.kind === 'group' && x.groupId === p.groupId) : undefined
           return (
             <li key={p.id}>
               <button className="row-item" onClick={() => openProgram(p.id)}>
@@ -117,6 +99,7 @@ function ProgramList() {
                   <span className="row-item__meta">
                     {p.dong} · {p.kind === 'group' ? '멤버' : '신청'} {p.taken}/{p.capacity} · {p.cost.split(' (')[0]}
                   </span>
+                  {follow && <span className="row-item__next">→ 끝나면 {follow.title}으로 이어져요</span>}
                   <span className="badges">
                     <span className={`badge-kind badge-kind--${p.kind}`}>{p.kind === 'class' ? '강좌' : '모임'}</span>
                     <span className={`badge-host badge-host--${p.hostType}`}>{HOST_TYPE[p.hostType].label}</span>
@@ -157,133 +140,6 @@ function ProgramList() {
         <span aria-hidden>＋</span> 제안하기
       </button>
     </>
-  )
-}
-
-function JobList() {
-  const { jobs, profile, jobInterests } = useStore()
-  const me = profile.name || '나'
-  const sorted = [...jobs].sort((a, b) => (b.dong === profile.dong ? 1 : 0) - (a.dong === profile.dong ? 1 : 0))
-
-  return (
-    <>
-      <div className="job-intro mx">
-        <p>
-          <b>내 경험을 살리는 동네 일자리</b>
-        </p>
-        <p className="fine">
-          복지관·주민센터의 어르신 일자리와 동네 가게 일을 소개해요. 또봄은 지원을 받지 않아요. ‘관심 있어요’를 누르면 진행자가 전화로 자세히
-          안내해 드려요. <DemoTag>모두 가상 예시</DemoTag>
-        </p>
-      </div>
-      <ul className="rows">
-        {sorted.map((j) => {
-          const on = jobInterests.some((x) => x.jobId === j.id && x.by === me)
-          return (
-            <li key={j.id}>
-              <button className="row-item" onClick={() => openJob(j.id)}>
-                <span className="thumb thumb--job" aria-hidden>
-                  {j.emoji}
-                </span>
-                <span className="row-item__body">
-                  <span className="row-item__title">{j.title}</span>
-                  <span className="row-item__desc">{j.org}</span>
-                  <span className="row-item__meta">
-                    {j.dong} · {j.hours}
-                  </span>
-                  <span className="badges">
-                    <span className={`badge-host ${j.orgType === 'public' ? 'badge-host--center' : 'badge-host--shop'}`}>
-                      {j.orgType === 'public' ? '공공 일자리' : '동네 가게'}
-                    </span>
-                    <span className="badge-host">{j.effort.split(' · ')[0]}</span>
-                    <span className="badge-host">{j.openings}명 모집</span>
-                    {on && <span className="badge-joined">✓ 관심 표시함</span>}
-                  </span>
-                </span>
-              </button>
-            </li>
-          )
-        })}
-      </ul>
-      <div className="mx">
-        <Note tone="warm">
-          <b>이런 건 일자리가 아니에요</b>
-          <br />
-          먼저 돈을 내라는 일, 물건을 사야 시작할 수 있는 일, 투자·가입을 권하는 일. 이런 연락을 받으면 ‘도움 → 불편한 일 알리기’로 알려 주세요.
-        </Note>
-      </div>
-    </>
-  )
-}
-
-export function JobDetail() {
-  const { jobs, jobId, jobInterests, profile } = useStore()
-  const j = jobs.find((x) => x.id === jobId)
-  if (!j) return null
-  const on = jobInterests.some((x) => x.jobId === j.id && x.by === (profile.name || '나'))
-
-  return (
-    <main className="page page--cta">
-      <div className="cover cover--job">
-        <button className="cover__back" onClick={() => go('explore')} aria-label="이전으로">
-          ←
-        </button>
-        <span aria-hidden>{j.emoji}</span>
-      </div>
-      <span className="badges">
-        <span className={`badge-host ${j.orgType === 'public' ? 'badge-host--center' : 'badge-host--shop'}`}>{j.orgType === 'public' ? '공공 일자리' : '동네 가게'}</span>
-        <DemoTag>가상 예시</DemoTag>
-      </span>
-      <h1 className="h1">{j.title}</h1>
-      <p className="sub">{j.org}</p>
-      <p>{j.desc}</p>
-
-      <dl className="card facts facts--detail">
-        <div>
-          <dt>언제</dt>
-          <dd>{j.hours}</dd>
-        </div>
-        <div>
-          <dt>기간</dt>
-          <dd>{j.period}</dd>
-        </div>
-        <div>
-          <dt>어디</dt>
-          <dd>{j.place}</dd>
-        </div>
-        <div>
-          <dt>몸 쓰기</dt>
-          <dd>{j.effort}</dd>
-        </div>
-        <div>
-          <dt>보수</dt>
-          <dd>{j.pay}</dd>
-        </div>
-        <div>
-          <dt>모집</dt>
-          <dd>{j.openings}명</dd>
-        </div>
-      </dl>
-
-      <div className="card host-card">
-        <p className="eyebrow">이런 분께 잘 맞아요</p>
-        <p>{j.good}</p>
-      </div>
-
-      <Note>
-        또봄은 일자리를 소개만 해요. 지원서·계약은 일하는 곳과 직접 해요. 진행자가 근무 조건을 먼저 확인했어요(데모에서는 확인 절차 없음).
-      </Note>
-
-      <div className="cta-bar">
-        <span className="cta-bar__info">
-          <b>{j.openings}명 모집</b>
-          <small>{j.dong}</small>
-        </span>
-        <button className={`btn ${on ? 'btn--ghost' : 'btn--primary'}`} onClick={() => toggleJobInterest(j.id)}>
-          {on ? '관심 거두기' : '관심 있어요'}
-        </button>
-      </div>
-    </main>
   )
 }
 
@@ -368,12 +224,25 @@ export function ProgramDetail() {
       </div>
 
       {next && (
-        <button className="card next-group" onClick={() => openProgram(next.id)}>
+        <div className="card next-group">
           <span className="eyebrow">강좌가 끝나면</span>
           <span>
-            같은 반 분들과 <b>{next.title}</b>으로 계속 만날 수 있어요 →
+            같은 반 분들과 <b>{next.title}</b>으로 계속 만날 수 있어요. 진행자가 첫 만남까지 함께해요.
           </span>
-        </button>
+          {joined && group && !groupIds.includes(group.id) ? (
+            <button className="btn btn--primary" onClick={() => joinGroup(group.id)}>
+              이 모임에도 미리 들어가기
+            </button>
+          ) : joined && group ? (
+            <button className="btn btn--soft" onClick={() => openGroup(group.id)}>
+              ✓ 들어가 있어요 · 모임 보기
+            </button>
+          ) : (
+            <button className="btn btn--soft" onClick={() => openProgram(next.id)}>
+              어떤 모임인지 보기 →
+            </button>
+          )}
+        </div>
       )}
 
       {p.hostType === 'shop' && (
