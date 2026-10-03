@@ -532,11 +532,8 @@ html, body { background: #e4eef1; }
 .eyebrow { font-size: .85rem; color: var(--teal-deep); }
 
 /* 손으로 그은 물결 밑줄 */
-.scribble {
-  padding-bottom: 6px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8 Q 12 2 22 7 T 42 7 T 62 7 T 82 7 T 102 7 T 118 6' fill='none' stroke='%23FF6F7D' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E") bottom / 100% 12px no-repeat;
-}
-.hero .scribble { color: var(--peach); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8 Q 12 2 22 7 T 42 7 T 62 7 T 82 7 T 102 7 T 118 6' fill='none' stroke='%23FFD6C8' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E"); }
+.scribble { padding-bottom: 2px; background: linear-gradient(transparent 62%, var(--coral) 62%, var(--coral) 88%, transparent 88%); }
+.hero .scribble { color: var(--peach); background: linear-gradient(transparent 70%, rgb(255 111 125 / .7) 70%, rgb(255 111 125 / .7) 92%, transparent 92%); }
 
 /* 마스코트 */
 .buddy { display: block; flex-shrink: 0; overflow: visible; }
@@ -547,7 +544,7 @@ html, body { background: #e4eef1; }
 .welcome-badge { display: grid; place-items: center; margin-top: 4px; }
 .welcome-badge .buddy, .empty .buddy { margin: 0 auto; animation: bob 3s ease-in-out infinite; }
 .send-head { display: flex; align-items: center; gap: 10px; }
-@keyframes bob { 50% { transform: translateY(-5px) rotate(-2deg); } }
+@keyframes bob { 50% { transform: translateY(-5px); } }
 @media (prefers-reduced-motion: reduce) { .buddy { animation: none !important; } }
 
 /* 스티커 버튼: 누르면 꾹 눌림 */
@@ -570,10 +567,10 @@ html, body { background: #e4eef1; }
 }
 .card { border: 2px solid #c8d8dd; border-radius: 22px; }
 .meet-card { background: var(--peach-soft); }
-.interest.on, .role.on, .choice.on { box-shadow: 1px 1px 0 var(--edge); transform: translate(2px, 2px); }
+.interest.on, .role.on, .choice.on { box-shadow: var(--pop); }
 .chip { border-width: 2.5px; }
 .chip.on { border-color: var(--edge); background: var(--aqua); color: var(--ink); }
-.bridge { background: var(--peach); font-size: .85rem; transform: rotate(-1deg); }
+.bridge { background: var(--peach); font-size: .85rem; }
 .empty { background: var(--surface); }
 .promise li { border-radius: 18px; }
 .note { border-radius: 18px; border: 2px dashed #a9c4cc; background: var(--surface); }
@@ -581,15 +578,11 @@ html, body { background: #e4eef1; }
 
 /* 안부 보내기 버튼: 크게, 살짝 기울여 손으로 붙인 느낌 */
 .send { min-height: 112px; border-radius: 26px; }
-.send:nth-child(1) { transform: rotate(-.8deg); }
-.send:nth-child(3) { transform: rotate(.8deg); }
 .send:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--edge); }
 .send__label { font-size: 1.5rem; }
 
 /* 목록: 썸네일을 엇갈려 기울인 폴라로이드 */
 .thumb { border: 2.5px solid var(--edge); box-shadow: 2px 2px 0 var(--edge); }
-.rows li:nth-child(odd) .thumb { transform: rotate(-3deg); }
-.rows li:nth-child(even) .thumb { transform: rotate(2.5deg); }
 .row-item__title { font-size: 1.2rem; }
 .row-item__desc { font-size: .9rem; }
 .row-item__next { font-size: .85rem; }
@@ -602,7 +595,7 @@ html, body { background: #e4eef1; }
 .badges > span { font-size: .72rem; padding: 3px 10px; border: 1.5px solid var(--edge); }
 .badge-host { background: var(--surface); }
 .badge-match { background: var(--aqua); color: var(--ink); }
-.demo-pill { font-family: 'Jua', sans-serif; font-weight: 400; font-size: .8rem; border: 2px solid var(--edge); transform: rotate(3deg); }
+.demo-pill { font-family: 'Jua', sans-serif; font-weight: 400; font-size: .8rem; border: 2px solid var(--edge); }
 .demo-tag { border-style: dashed; font-size: .7rem; }
 
 /* 달력 모양 날짜 */
@@ -643,3 +636,12 @@ html, body { background: #e4eef1; }
 .who-goes { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
 .who-goes__row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .who-goes p { text-align: left; }
+
+/* 강좌 → 모임 → 안부 안내: 세 칸을 같은 폭으로 똑바로 */
+.bridge { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 4px; padding: 12px 10px; text-align: center; }
+.bridge__step { display: flex; flex-direction: column; align-items: center; gap: 2px; white-space: normal; line-height: 1.3; font-family: 'Jua', 'Noto Sans KR', sans-serif; font-weight: 400; font-size: .9rem; }
+.bridge__step span:first-child { font-size: 1.5rem; }
+.bridge > span[aria-hidden] { font-size: 1.1rem; }
+.bridge { align-items: start; }
+.bridge > span[aria-hidden] { align-self: center; }
+.bridge__step span:last-child { white-space: nowrap; }

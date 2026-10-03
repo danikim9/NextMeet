@@ -1,4 +1,4 @@
-import { useEffect, useId, type ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { go, resetDemo, setState, useStore, type CheckinKind, type ReplyKind, type Screen } from './store'
 
 export const CHECKIN: Record<CheckinKind, { label: string; emoji: string; desc: string }> = {
@@ -146,9 +146,8 @@ export function DateBlock({ date }: { date: string }) {
   )
 }
 
-/** 또봄이: 로고의 두 동그라미가 손그림 캐릭터가 된 마스코트 */
+/** 또봄이: 로고의 두 동그라미가 캐릭터가 된 마스코트 */
 export function Buddy({ mood = 'happy', size = 140 }: { mood?: 'happy' | 'sleep' | 'wave'; size?: number }) {
-  const id = useId().replace(/:/g, '')
   const ink = '#15323d'
   const eye = (x: number) =>
     mood === 'sleep' ? (
@@ -158,13 +157,7 @@ export function Buddy({ mood = 'happy', size = 140 }: { mood?: 'happy' | 'sleep'
     )
   return (
     <svg className="buddy" viewBox="0 0 150 100" width={size} height={(size * 100) / 150} aria-hidden>
-      <defs>
-        <filter id={`w${id}`}>
-          <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="4" />
-          <feDisplacementMap in="SourceGraphic" scale="3" />
-        </filter>
-      </defs>
-      <g filter={`url(#w${id})`} stroke={ink} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+      <g stroke={ink} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M96 26 q2 -14 16 -16 q0 13 -16 16z" fill="#4FB6C6" />
         <path d="M96 26 q-3 -6 0 -12" fill="none" />
         <circle cx="50" cy="60" r="32" fill="#4FB6C6" />

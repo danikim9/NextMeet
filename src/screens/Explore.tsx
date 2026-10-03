@@ -33,11 +33,20 @@ export function Explore() {
         <span className="demo-pill">데모</span>
       </header>
       <div className="bridge mx">
-        <span className="bridge__step">🎓 강좌 듣고</span>
+        <span className="bridge__step">
+          <span aria-hidden>🎓</span>
+          <span>강좌 듣고</span>
+        </span>
         <span aria-hidden>→</span>
-        <span className="bridge__step">👥 같은 반 모임으로</span>
+        <span className="bridge__step">
+          <span aria-hidden>👥</span>
+          <span>같은 반 모임</span>
+        </span>
         <span aria-hidden>→</span>
-        <span className="bridge__step">💌 안부와 다음 만남</span>
+        <span className="bridge__step">
+          <span aria-hidden>💌</span>
+          <span>안부·다음 만남</span>
+        </span>
       </div>
       <ProgramList />
       <TabBar active="explore" />
