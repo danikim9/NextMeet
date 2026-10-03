@@ -168,10 +168,10 @@ export function InterestStep() {
         disabled={picked.length === 0}
         onClick={() => {
           setState((s) => ({ ...s, profile: { ...s.profile, interests: picked, times } }))
-          go('groups')
+          go('explore')
         }}
       >
-        모임 보러 가기
+        강좌·모임 보러 가기
       </button>
     </main>
   )

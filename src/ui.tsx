@@ -71,7 +71,8 @@ export function DemoTag({ children = '예시' }: { children?: ReactNode }) {
 }
 
 const TABS: { screen: Screen; label: string; icon: string }[] = [
-  { screen: 'home', label: '우리 모임', icon: '🏠' },
+  { screen: 'explore', label: '둘러보기', icon: '🔍' },
+  { screen: 'home', label: '내 모임', icon: '🏠' },
   { screen: 'meet', label: '만남', icon: '📅' },
   { screen: 'help', label: '도움', icon: '🙋' },
 ]

@@ -358,3 +358,72 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 .host-form { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
 .card.host-form { margin-top: 0; }
 .input--code::placeholder { letter-spacing: normal; font-size: 1.1rem; font-weight: 500; color: #8aa0a8; }
+
+/* ── 둘러보기 ── */
+.tabbar { grid-template-columns: repeat(4, 1fr); }
+.tabbar button { font-size: .82rem; }
+.segments { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 5px; }
+.segments button { white-space: nowrap; padding: 0 4px; min-height: 50px; border: 0; border-radius: 12px; background: none; font-weight: 700; font-size: .85rem; color: var(--sub); cursor: pointer; }
+.segments button.on { background: var(--teal); color: #fff; }
+.program-list { display: flex; flex-direction: column; gap: 14px; }
+.program { display: flex; gap: 14px; width: 100%; text-align: left; cursor: pointer; padding: 14px; }
+.program__thumb { flex-shrink: 0; width: 76px; height: 76px; border-radius: 16px; display: grid; place-items: center; font-size: 2.2rem; }
+.program__thumb--class { background: var(--peach); }
+.program__thumb--group { background: var(--aqua-soft); }
+.program__body { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.program__title { font-size: 1.1rem; font-weight: 700; line-height: 1.35; margin-top: 2px; }
+.program__meta { font-size: .8rem; color: var(--sub); }
+.program__foot { display: flex; justify-content: space-between; gap: 8px; margin-top: 6px; font-size: .82rem; font-weight: 700; }
+.program__foot span:last-child { color: var(--teal); }
+.program__foot .full { color: var(--sub) !important; }
+.badges { display: flex; flex-wrap: wrap; gap: 5px; }
+.badges > span { font-size: .68rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; }
+.badge-kind--class { background: var(--coral); color: var(--ink); }
+.badge-kind--group { background: var(--teal); color: #fff; }
+.badge-host { background: var(--cloud); color: var(--ink); border: 1px solid var(--line); }
+.badge-host--shop { background: var(--peach-soft); border-color: var(--peach); }
+.badge-match { background: var(--aqua-soft); color: var(--teal-deep); }
+.propose-banner { display: flex; gap: 14px; align-items: center; text-align: left; cursor: pointer; background: var(--coral-soft); border: 2px dashed var(--coral); width: 100%; }
+.propose-banner > span:first-child { font-size: 2rem; }
+.propose-banner b { display: block; font-size: 1.05rem; }
+.propose-banner small { color: var(--sub); font-size: .85rem; }
+.mini-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.mini-list li { display: flex; justify-content: space-between; gap: 10px; align-items: center; font-size: .9rem; }
+.mini-list .pill { flex-shrink: 0; }
+
+.detail-hero { margin: 0 -20px; height: 150px; display: grid; place-items: center; font-size: 4.5rem; }
+.detail-hero--class { background: var(--peach); }
+.detail-hero--group { background: var(--aqua-soft); }
+.facts--detail { display: grid; gap: 10px; margin: 0; }
+.facts--detail div { display: flex; gap: 12px; }
+.facts--detail dd { font-weight: 600; }
+.host-card { display: flex; flex-direction: column; gap: 4px; }
+.host-card__name { font-weight: 700; }
+.host-card__intro { color: var(--sub); font-size: .95rem; }
+.next-group { display: flex; flex-direction: column; gap: 4px; text-align: left; cursor: pointer; background: var(--aqua-soft); border: 2px solid var(--aqua); width: 100%; }
+
+.role { display: flex; gap: 14px; align-items: center; text-align: left; min-height: 76px; padding: 12px 18px; border: 2px solid var(--line); border-radius: 18px; background: var(--surface); cursor: pointer; }
+.role > span:first-child { font-size: 1.8rem; }
+.role b { display: block; }
+.role small { color: var(--sub); font-size: .85rem; }
+.role.on { border-color: var(--teal); background: var(--aqua-soft); }
+.textarea { padding: 14px 18px; min-height: 110px; resize: vertical; line-height: 1.5; }
+
+/* ── 내 모임 ── */
+.switcher { display: flex; gap: 8px; overflow-x: auto; margin: 0 -20px; padding: 2px 20px; scrollbar-width: none; }
+.switcher button { flex-shrink: 0; min-height: 48px; padding: 0 16px; border-radius: 999px; border: 2px solid var(--line); background: var(--surface); font-weight: 600; font-size: .9rem; cursor: pointer; }
+.switcher button.on { background: var(--teal); border-color: var(--teal); color: #fff; }
+.empty { text-align: center; padding: 28px 16px; background: var(--surface); border-radius: var(--radius); border: 1px dashed var(--line); display: flex; flex-direction: column; gap: 6px; }
+.empty > span { font-size: 2.6rem; }
+.mini-cards { display: flex; flex-direction: column; gap: 10px; }
+.mini-card { display: flex; gap: 14px; align-items: center; text-align: left; width: 100%; cursor: pointer; }
+.mini-card > span:first-child { font-size: 1.8rem; }
+.mini-card b { display: block; }
+.mini-card small { color: var(--sub); font-size: .82rem; }
+
+/* ── 만남 목록 ── */
+.meetup { display: flex; flex-direction: column; gap: 12px; }
+.meetup__title { font-size: 1.25rem; font-weight: 700; }
+.who-goes { font-size: .9rem; color: var(--ink); }
+.who-goes b { color: var(--teal); margin-right: 6px; }
+.badge-new { background: var(--ink); color: #fff; }
